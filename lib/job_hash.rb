@@ -17,7 +17,7 @@ class JobHash
     def build_hash
       jobs_hash = Hash.new
       jobs_arr.each_with_index do |job, index|
-        jobs_hash[job] = jobs_arr[(index + 1)] if is_even?(index)
+        jobs_hash[job] = jobs_arr[(index + 1)].strip! if is_even?(index)
       end
       jobs_hash
     end
