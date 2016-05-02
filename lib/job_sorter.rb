@@ -14,6 +14,7 @@ class JobSorter
   
   def sorted_jobs
     generate_new_jobs_arr
+    check_self_dependent
     add_root_jobs
     add_parents
     add_other_jobs
@@ -72,6 +73,12 @@ class JobSorter
     
     def job_already_added?(job)
       orderd_jobs_str.include?(job)
+    end
+    
+    def check_self_dependent
+      if new_jobs_arr.select{|job| job.name == job.parent}.count > 0
+        raise "jobs can't depend on themselves"
+      end
     end
  
 end

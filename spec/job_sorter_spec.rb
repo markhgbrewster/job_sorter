@@ -39,7 +39,6 @@ describe JobSorter do
       end
     end
 
-
     context 'when the jobs string is a => b => c c => f d => a e => b f =>' do
       let(:jobs_string) {"a => \nb => c \nc => f \nd => a \ne => b \nf => "}
       it 'returns a sequence that positions f before c, c before b, b before e and a before d' do
@@ -48,6 +47,13 @@ describe JobSorter do
 
       it 'returns all 6 jobs' do
         expect(subject.length).to eql(6)
+      end
+    end
+    
+    context 'when the jobs string is a => b => c => c' do
+      let(:jobs_string) {"a => \nb => \nc => c"}
+      it "returns and error stating that jobs can't depend on themselves" do
+        expect { subject }.to raise_error(RuntimeError, "jobs can't depend on themselves")
       end
     end
 
