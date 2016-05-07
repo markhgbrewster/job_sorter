@@ -1,20 +1,19 @@
 require 'job_hash'
 require 'job'
-
+require 'jobs_array_builder'
 
 class JobSorter
-  attr_reader :jobs_str, :orderd_jobs_str, :new_jobs_arr
+  attr_reader :jobs_str, :orderd_jobs_str
   private :jobs_str
 
   def initialize(jobs_str)
     @jobs_str = jobs_str
     @orderd_jobs_str = ''
-    @new_jobs_arr = []
   end
   
   def sorted_jobs
-    generate_new_jobs_arr
     check_self_dependent
+    validate_circular_dependencies
     add_root_jobs
     add_parents
     add_other_jobs
@@ -26,43 +25,38 @@ class JobSorter
     def jobs_hash
       @jobs_hash ||= JobHash.new(jobs_str).hash_of_jobs
     end
-    
+  
+    def array_builder
+      @array_builder ||= JobsArrayBuilder.new(jobs, jobs_hash)
+    end
+  
     def jobs
-       jobs_hash.keys
+      @jobs ||= jobs_hash.keys
     end
-    
-    def generate_new_jobs_arr 
-      jobs.each do |key|
-        new_jobs_arr << Job.new(key, jobs_hash)
-      end
-    end
-    
+  
     def add_root_jobs
-      new_jobs_arr.select{ |job|  job.root? }.each do |root_job|
+      array_builder.roots.each do |root_job|
         add_job_to_str(root_job.name)
+        add_children(root_job.name)
       end
     end
-    
-   def parents
-     new_jobs_arr.select{ |job| job.parent != " " }.map(&:parent)
-   end
     
    def add_parents
-     parents.each do |parent_job|
-       add_job_to_str(parent_job)
-       add_children(parent_job)
+     array_builder.parents.each do |parent_job|
+       add_job_to_str(parent_job.name)
+       add_children(parent_job.name)
      end
    end
     
     def add_other_jobs
-      new_jobs_arr.each do |job|
+      array_builder.all_jobs.each do |job|
         add_job_to_str(job.parent)
         add_job_to_str(job.name)
       end
     end
     
     def add_children(parent)
-       new_jobs_arr.select{ |job| job.parent == parent }.each do |job|
+       array_builder.children(parent).each do |job|
          add_job_to_str(job.name)
        end
     end 
@@ -76,8 +70,25 @@ class JobSorter
     end
     
     def check_self_dependent
-      if new_jobs_arr.select{|job| job.name == job.parent}.count > 0
+      if array_builder.dependent_on_selves.count > 0
         raise "jobs can't depend on themselves"
+      end
+    end
+    
+    def check_for_circular_dependencies(job)
+      array_builder.children(job.name).each do |child|
+        decendents = array_builder.children(child.name).map(&:name)
+        if child.name == job.parent || decendents.include?(job.parent) 
+          raise "jobs can’t have circular dependencies"
+        end
+      end
+    end
+    
+    def validate_circular_dependencies
+      array_builder.all_jobs.each do |job|
+        unless job.root?
+          check_for_circular_dependencies(job)
+        end
       end
     end
  

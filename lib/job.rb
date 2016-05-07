@@ -16,10 +16,10 @@ class Job
   end
   
   def root?
-    parent == ' '
+    parent == ''
   end
   
-  def child?
-    parent != ' '
+  def leaf?
+    !job_hash.values.include?(key)
   end
 end

@@ -38,8 +38,6 @@ describe JobHash do
         expect(subject).to eql({'a' => '','b' => 'c', 'c' => 'f', 'd' => 'a', 'e' => 'b', 'f' => ''})
       end
     end
-    
-    
   end
   
 end
