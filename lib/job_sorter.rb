@@ -3,20 +3,21 @@ require 'job'
 require 'jobs_array_builder'
 
 class JobSorter
-  attr_reader :jobs_str, :orderd_jobs_str
+  attr_reader :jobs_str, :orderd_jobs_str, :decendents_hash
   private :jobs_str
 
   def initialize(jobs_str)
     @jobs_str = jobs_str
     @orderd_jobs_str = ''
+    @decendents_hash = {}
   end
   
   def sorted_jobs
     check_self_dependent
-    validate_circular_dependencies
+    build_dynasty
+    check_circular_dependencies
     add_root_jobs
     add_parents
-    add_other_jobs
     orderd_jobs_str
   end
   
@@ -27,7 +28,7 @@ class JobSorter
     end
   
     def array_builder
-      @array_builder ||= JobsArrayBuilder.new(jobs, jobs_hash)
+      @array_builder ||= JobsArrayBuilder.new(jobs_hash)
     end
   
     def jobs
@@ -47,13 +48,6 @@ class JobSorter
        add_children(parent_job.name)
      end
    end
-    
-    def add_other_jobs
-      array_builder.all_jobs.each do |job|
-        add_job_to_str(job.parent)
-        add_job_to_str(job.name)
-      end
-    end
     
     def add_children(parent)
        array_builder.children(parent).each do |job|
@@ -75,24 +69,34 @@ class JobSorter
       end
     end
     
-    def check_for_circular_dependencies(job)
-      array_builder.children(job.name).each do |child|
-        if child.name == job.parent || decendents_names(child).include?(job.parent) 
-          raise "jobs can’t have circular dependencies"
-        end
-      end
-    end
-    
-    def decendents_names(child)
-      array_builder.children(child.name).map(&:name)
-    end
-    
-    def validate_circular_dependencies
+    def build_dynasty
       array_builder.all_jobs.each do |job|
         unless job.root?
-          check_for_circular_dependencies(job)
+          build_decendents_hash(job)
         end
       end
     end
- 
+    
+    def check_circular_dependencies
+      decendents_hash.keys.each do |key|
+        if decendents_hash[key].include?(key)
+          raise "jobs can’t have circular dependencies"
+        end  
+      end  
+    end
+    
+    def build_decendents_hash(job)
+      if decendents_hash.keys.include?(job.name)
+        decendents_hash[job.name] << job.parent
+      else
+        decendents_hash[job.name] = [job.parent]
+      end
+       build_decendents_hash_part_2(job)  
+    end
+    
+    def build_decendents_hash_part_2(job)
+      decendents_hash.select{|key, value| value.include?(job.name) }.keys.each do |key|
+        decendents_hash[key] << job.parent unless job.root?
+      end
+    end
 end

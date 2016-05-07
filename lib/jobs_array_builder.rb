@@ -1,11 +1,10 @@
 require 'job'
 
 class JobsArrayBuilder
-  attr_reader :jobs, :jobs_hash
-  private :jobs, :jobs_hash
+  attr_reader :jobs_hash
+  private :jobs_hash
   
-  def initialize(jobs, jobs_hash)
-    @jobs = jobs
+  def initialize(jobs_hash)
     @jobs_hash = jobs_hash
   end
   
@@ -15,10 +14,6 @@ class JobsArrayBuilder
   
   def roots
     gererated_array.select{ |job|  job.root? }
-  end
-  
-  def parents_names
-    parents.map(&:parent)
   end
   
   def parents
@@ -36,11 +31,7 @@ class JobsArrayBuilder
   private
     
     def generate_jobs_arr 
-      array =[]
-      jobs.each do |key|
-        array << Job.new(key, jobs_hash)
-      end
-      array
+      jobs_hash.keys.map { |key| Job.new(key, jobs_hash) }
     end
     
     def gererated_array
