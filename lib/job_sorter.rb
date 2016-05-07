@@ -17,7 +17,7 @@ class JobSorter
     build_dynasty
     check_circular_dependencies
     add_root_jobs
-    add_parents
+    add_other_jobs
     orderd_jobs_str
   end
   
@@ -42,10 +42,10 @@ class JobSorter
       end
     end
     
-   def add_parents
-     array_builder.parents.each do |parent_job|
-       add_job_to_str(parent_job.name)
-       add_children(parent_job.name)
+   def add_other_jobs
+     array_builder.not_roots.each do |job|
+       add_job_to_str(job.name)
+       add_children(job.name)
      end
    end
     
