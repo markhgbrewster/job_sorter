@@ -77,11 +77,14 @@ class JobSorter
     
     def check_for_circular_dependencies(job)
       array_builder.children(job.name).each do |child|
-        decendents = array_builder.children(child.name).map(&:name)
-        if child.name == job.parent || decendents.include?(job.parent) 
+        if child.name == job.parent || decendents_names(child).include?(job.parent) 
           raise "jobs can’t have circular dependencies"
         end
       end
+    end
+    
+    def decendents_names(child)
+      array_builder.children(child.name).map(&:name)
     end
     
     def validate_circular_dependencies
