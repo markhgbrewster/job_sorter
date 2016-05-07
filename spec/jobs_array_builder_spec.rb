@@ -35,6 +35,13 @@ describe JobsArrayBuilder do
     end
   end
   
+  describe '#children' do
+    subject { builder.children(second_job.name) }
+    it 'returns the and array of the jobs dependent on the job passed in' do
+      expect(subject).to eql([first_job])
+    end
+  end
+  
   describe '#dependent_on_selves' do
     subject { builder.dependent_on_selves }
     it 'returns the jobs that are dependen on them selves' do
