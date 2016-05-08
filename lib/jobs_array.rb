@@ -1,6 +1,6 @@
 require 'job'
 
-class JobsArrayBuilder
+class JobsArray
   attr_reader :jobs_hash
   private :jobs_hash
   

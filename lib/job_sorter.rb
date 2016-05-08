@@ -1,5 +1,5 @@
 require 'job_hash'
-require 'jobs_array_builder'
+require 'jobs_array'
 
 class JobSorter
   attr_reader :jobs_str, :orderd_jobs_str, :ancestry_hash
@@ -28,7 +28,7 @@ class JobSorter
   
     def array_builder
       #loop through the jobs hash and creates an array of Job objects 
-      @array_builder ||= JobsArrayBuilder.new(jobs_hash)
+      @array_builder ||= JobsArray.new(jobs_hash)
     end
   
     def jobs

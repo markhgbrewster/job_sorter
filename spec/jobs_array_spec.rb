@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe JobsArrayBuilder do
-  let(:builder) { JobsArrayBuilder.new(jobs_hash) }
+describe JobsArray do
+  let(:builder) { JobsArray.new(jobs_hash) }
   let(:jobs_hash) { { 'b' => 'c', 'c' => '', 'd' => 'd' }  }
   
   let(:first_job) { double('first_job', name: 'b', root?: false, parent: 'c') }
