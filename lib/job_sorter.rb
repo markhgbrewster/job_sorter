@@ -73,8 +73,8 @@ class JobSorter
       ancestry_hash.keys.each do |key|
         if ancestry_hash[key].include?(key)
           raise "jobs can’t have circular dependencies"
-        end  
-      end  
+        end
+      end
     end
     
     def build_ancestry_hash
@@ -91,7 +91,7 @@ class JobSorter
       else
         ancestry_hash[job.name] = [job.parent]
       end
-      add_ancestrors_to_hash(job)  
+      add_ancestrors_to_hash(job)
     end
     
     def add_ancestrors_to_hash(job)
