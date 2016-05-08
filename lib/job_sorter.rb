@@ -3,13 +3,13 @@ require 'job'
 require 'jobs_array_builder'
 
 class JobSorter
-  attr_reader :jobs_str, :orderd_jobs_str, :decendents_hash
+  attr_reader :jobs_str, :orderd_jobs_str, :ancestry_hash
   private :jobs_str
 
   def initialize(jobs_str)
     @jobs_str = jobs_str
     @orderd_jobs_str = ''
-    @decendents_hash = {}
+    @ancestry_hash = {}
   end
   
   def sorted_jobs
@@ -69,34 +69,34 @@ class JobSorter
     end
     
     def check_circular_dependencies
-      build_dynasties
-      decendents_hash.keys.each do |key|
-        if decendents_hash[key].include?(key)
+      build_ancestry_hash
+      ancestry_hash.keys.each do |key|
+        if ancestry_hash[key].include?(key)
           raise "jobs can’t have circular dependencies"
         end  
       end  
     end
     
-    def build_dynasties
+    def build_ancestry_hash
       array_builder.all_jobs.each do |job|
         unless job.root?
-          build_decendents_hash(job)
+          add_to_ancestry_hash(job)
         end
       end
     end
     
-    def build_decendents_hash(job)
-      if decendents_hash.keys.include?(job.name)
-        decendents_hash[job.name] << job.parent
+    def add_to_ancestry_hash(job)
+      if ancestry_hash.keys.include?(job.name)
+        ancestry_hash[job.name] << job.parent
       else
-        decendents_hash[job.name] = [job.parent]
+        ancestry_hash[job.name] = [job.parent]
       end
-       build_decendents_hash_part_2(job)  
+      add_ancestrors_to_hash(job)  
     end
     
-    def build_decendents_hash_part_2(job)
-      decendents_hash.select{|key, value| value.include?(job.name) }.keys.each do |key|
-        decendents_hash[key] << job.parent unless job.root?
+    def add_ancestrors_to_hash(job)
+      ancestry_hash.select{|key, value| value.include?(job.name) }.keys.each do |key|
+        ancestry_hash[key] << job.parent unless job.root?
       end
     end
 end
