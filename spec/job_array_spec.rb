@@ -12,6 +12,7 @@ describe JobArray do
 
   describe "#job_str_to_arr" do
     subject { array.job_str_to_arr }
+    let(:jobs_string) { '' }
     context 'when jobs string is an empty string' do
       it 'returns an empty array' do
         expect(subject).to eql([])

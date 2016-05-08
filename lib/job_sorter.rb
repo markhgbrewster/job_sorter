@@ -14,7 +14,6 @@ class JobSorter
   
   def sorted_jobs
     check_self_dependent
-    build_dynasty
     check_circular_dependencies
     add_root_jobs
     add_other_jobs
@@ -69,20 +68,21 @@ class JobSorter
       end
     end
     
-    def build_dynasty
-      array_builder.all_jobs.each do |job|
-        unless job.root?
-          build_decendents_hash(job)
-        end
-      end
-    end
-    
     def check_circular_dependencies
+      build_dynasties
       decendents_hash.keys.each do |key|
         if decendents_hash[key].include?(key)
           raise "jobs can’t have circular dependencies"
         end  
       end  
+    end
+    
+    def build_dynasties
+      array_builder.all_jobs.each do |job|
+        unless job.root?
+          build_decendents_hash(job)
+        end
+      end
     end
     
     def build_decendents_hash(job)

@@ -9,18 +9,14 @@ class JobHash
   end
   
   def hash_of_jobs
-    build_hash
+    jobs_hash = Hash.new
+    jobs_arr.each_with_index do |job, index|
+      jobs_hash[job] = jobs_arr[(index + 1)].strip! if is_even?(index)
+    end
+    jobs_hash
   end
   
   private
-      
-    def build_hash
-      jobs_hash = Hash.new
-      jobs_arr.each_with_index do |job, index|
-        jobs_hash[job] = jobs_arr[(index + 1)].strip! if is_even?(index)
-      end
-      jobs_hash
-    end
 
     def is_even?(index)
       index % 2 == 0

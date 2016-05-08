@@ -12,6 +12,7 @@ describe JobSorter do
 
   describe "#sorted_jobs" do
     subject { sorter.sorted_jobs }
+    let(:jobs_string) { '' }
     context 'when jobs string is an empty string' do
       it 'returns sequence consisting of an empty string' do
         expect(subject).to eql('')
@@ -44,7 +45,6 @@ describe JobSorter do
       it 'returns a sequence that positions f before c, c before b, b before e and a before d' do
         expect(subject).to eql('adfcbe')
       end
-
       it 'returns all 6 jobs' do
         expect(subject.length).to eql(6)
       end
@@ -59,6 +59,13 @@ describe JobSorter do
     
     context 'when the jobs string is a => b => c c => f d => a e => f => b' do 
       let(:jobs_string) {"a => \nb => c \nc => f \nd => a \ne => \nf => b"}
+      it "returns and error stating that jobs can’t have circular dependencies" do
+         expect { subject }.to raise_error(RuntimeError, "jobs can’t have circular dependencies")
+      end
+    end
+    
+    context 'when the jobs string is a => b => c c => f d => a e => f => g g => h h => b' do 
+      let(:jobs_string) {"a => \nb => c \nc => f \nd => a \ne => \nf => h \ng => h \nh => b" }
       it "returns and error stating that jobs can’t have circular dependencies" do
          expect { subject }.to raise_error(RuntimeError, "jobs can’t have circular dependencies")
       end

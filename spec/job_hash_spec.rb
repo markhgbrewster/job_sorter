@@ -12,6 +12,7 @@ describe JobHash do
 
   describe "#hash_of_jobs" do
     subject { hash.hash_of_jobs }
+    let(:jobs_string) { '' }
     context 'when jobs string is an empty string' do
       it 'returns an empty hash' do
         expect(subject).to eql({})
