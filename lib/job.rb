@@ -7,19 +7,19 @@ class Job
     @job_hash = job_hash
   end
   
-  def name 
+  def name
+    #returns the name of the job 
     key
   end
   
   def parent
+    #return the job the job is dependant on 
     job_hash[key]
   end
   
   def root?
+    #returns true of the job is not depandant on any other job
     parent == ''
   end
-  
-  def leaf?
-    !job_hash.values.include?(key)
-  end
+
 end
