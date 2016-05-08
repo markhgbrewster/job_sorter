@@ -3,7 +3,7 @@ require 'jobs_array'
 
 class JobSorter
   attr_reader :jobs_str, :orderd_jobs_str, :ancestry_hash
-  private :jobs_str
+  private :jobs_str, :orderd_jobs_str, :ancestry_hash
 
   def initialize(jobs_str)
     @jobs_str = jobs_str

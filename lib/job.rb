@@ -13,7 +13,7 @@ class Job
   end
   
   def parent
-    #return the job the job is dependant on 
+    #returns the job the job is dependant on 
     job_hash[key]
   end
   
